@@ -1,0 +1,73 @@
+﻿@model List<OrderProduct>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Create New Order</h2>
+        </div>
+        <div class="col-6" style="text-align:right">
+            <form method="post" enctype="multipart/form-data" asp-action="Create">
+                <div class="form-group mb-2">
+                    <input type="file" name="file" class="form-control"/>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Excel</button>
+            </form>
+        </div>
+    </div>
+    <br/>
+    @if (Model != null && Model.Count > 0)
+    {
+        <form method="post" asp-action="SaveToDb">
+            <input type="text" class="form-control mb-4" name="orderTitle" value="@ViewBag.FileName" placeholder="Order title" required/>
+            <input type="hidden" name="totalPrice" value="@ViewBag.TotalPrice"/>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <input type="hidden" name="orderProducts[@i].ProductId" value="@Model[i].ProductId"/>
+                <input type="hidden" name="orderProducts[@i].ProductName" value="@Model[i].Product?.Name"/>
+                <input type="hidden" name="orderProducts[@i].Quantity" value="@Model[i].Quantity"/>
+                <input type="hidden" name="orderProducts[@i].IsInDb" value="@Model[i].IsInDb"/>
+            }
+            <button type="submit" class="btn btn-primary">Save to Database</button>
+        </form>
+        <div class="h2 text-black my-3">Total Price: @ViewBag.TotalPrice</div>
+        <table class="table table-bordered table-striped" width="100%">
+            <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>In db</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Product?.Name @item.ProductName</td>
+                    <td>
+                        @if (item.IsInDb)
+                        {
+                            if (item.Product.Price != 0)
+                            {
+                                <p>Product found in Database</p>
+                            }
+                            else
+                            {
+                                <p class="text-danger">The price is 0</p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-danger">Not found in Database</p>
+                        }
+                    </td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No order items uploaded.</p>
+    }
+</div>

@@ -1,0 +1,78 @@
+﻿@model Order
+
+<div class="container p-3 mb-4">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Order review</h2>
+        </div>
+        <div class="col-6" style="text-align:right">
+            <form method="post" asp-action="Review">
+                <input type="hidden" name="orderId" value="@Model.Id"/>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-calculator"></i> Recalculate
+                </button>
+            </form>
+        </div>
+    </div>
+    <br/>
+    @if (Model != null)
+    {
+        <h3>Order Details</h3>
+        <table class="table table-bordered table-striped" width="100%">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Upload date</th>
+                <th>Last Change</th>
+                <th>Total Price</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>@Model.Id</td>
+                <td>@Model.Title</td>
+                <td>@Model.UploadDate</td>
+                <td>@Model.LastChange</td>
+                <td>@Model.TotalPrice</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h3>Product List</h3>
+        <table class="table table-bordered table-striped" width="100%">
+            <thead>
+            <tr>
+                <th>Product Id</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.OrderProducts)
+            {
+                <tr>
+                    <td>@item.Product.Id</td>
+                    <td>@item.Product.Name</td>
+                    <td>
+                        @if (item.Product.Price > 0)
+                        {
+                            <p>@item.Product.Price</p>
+                        }
+                        else
+                        {
+                            <p class="text-danger">@item.Product.Price</p>
+                        }
+                    </td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No order found.</p>
+    }
+</div>

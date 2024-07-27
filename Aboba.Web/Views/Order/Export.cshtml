@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Export Orders";
+}
+
+<h2>Export Orders</h2>
+
+<form method="post" asp-action="Export">
+    <div>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required />
+    </div>
+    <div>
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required />
+    </div>
+    <button type="submit">Export</button>
+</form>

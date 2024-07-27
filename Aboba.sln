@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aboba.Web", "Aboba.Web\Aboba.Web.csproj", "{C2A5D79F-8A29-4282-BB56-C7DF36F801FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aboba.Infrastructure", "Aboba.Infrastructure\Aboba.Infrastructure.csproj", "{AF75A279-9727-49F1-9BE5-9F10F2B55142}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aboba.Domain", "Aboba.Domain\Aboba.Domain.csproj", "{3C89B6C6-8368-4830-A110-6FF824DF4EFB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aboba.Application", "Aboba.Application\Aboba.Application.csproj", "{4D23799E-8D97-4310-B4DD-AD43E76FE5AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2A5D79F-8A29-4282-BB56-C7DF36F801FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2A5D79F-8A29-4282-BB56-C7DF36F801FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2A5D79F-8A29-4282-BB56-C7DF36F801FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2A5D79F-8A29-4282-BB56-C7DF36F801FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF75A279-9727-49F1-9BE5-9F10F2B55142}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF75A279-9727-49F1-9BE5-9F10F2B55142}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF75A279-9727-49F1-9BE5-9F10F2B55142}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF75A279-9727-49F1-9BE5-9F10F2B55142}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C89B6C6-8368-4830-A110-6FF824DF4EFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C89B6C6-8368-4830-A110-6FF824DF4EFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C89B6C6-8368-4830-A110-6FF824DF4EFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C89B6C6-8368-4830-A110-6FF824DF4EFB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D23799E-8D97-4310-B4DD-AD43E76FE5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D23799E-8D97-4310-B4DD-AD43E76FE5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D23799E-8D97-4310-B4DD-AD43E76FE5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D23799E-8D97-4310-B4DD-AD43E76FE5AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

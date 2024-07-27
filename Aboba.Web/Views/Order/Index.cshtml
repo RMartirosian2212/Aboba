@@ -1,0 +1,94 @@
+﻿@model IEnumerable<Order>
+
+<div class="container p-3">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-primary">Order List</h2>
+        </div>
+        <div class="col-6" style="text-align:right">
+            <a class="btn btn-primary" asp-action="Create">
+                <i class="fa-solid fa-plus"></i> Create new order
+            </a>
+            <a class="btn btn-primary" asp-action="Export">
+                <i class="fa-solid fa-file-excel"></i> Export
+            </a>
+        </div>
+    </div>
+    <br/>
+
+    @if (Model.Any())
+    {
+        <table class="table table-bordered table-striped" width="100%">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Total Price</th>
+                <th>Upload Date</th>
+                <th>Last Change</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody id="productTableBody">
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td width="10%">@item.Id</td>
+                    <td width="20%">@item.Title</td>
+                    <td width="10%">@item.TotalPrice</td>
+                    <td width="20%">@item.UploadDate</td>
+                    <td width="20%">@item.LastChange</td>
+                    <td class="text-center">
+                        <div class="w-75 btn-group" role="group">
+                            <a class="btn btn-primary mx-2" asp-route-Id="@item.Id" asp-action="Review">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </a>
+                            <button class="btn btn-danger" type="button" data-bs-toggle="modal" data-bs-target="#deleteModal" data-order-id="@item.Id">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No orders found.</p>
+    }
+</div>
+
+<div id="deleteModalContainer"></div>
+
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        // Delegate the event handling to the document for dynamic content
+        $(document).on('click', 'button[data-bs-toggle="modal"]', function() {
+            var orderId = $(this).data('order-id');
+
+            // Ensure any existing modal is hidden and removed
+            $('#deleteModal').modal('hide').on('hidden.bs.modal', function (e) {
+                $(this).remove();
+            });
+
+            // Load the new modal content
+            $.ajax({
+                url: '@Url.Action("LoadDeleteConfirmation", "Order")',
+                type: 'GET',
+                data: { id: orderId },
+                success: function (result) {
+                    $('#deleteModalContainer').html(result);
+                    $('#deleteModal').modal('show');
+                }
+            });
+        });
+
+        // Remove the modal content from the DOM after it is hidden
+        $(document).on('hidden.bs.modal', '#deleteModal', function () {
+            $('#deleteModalContainer').empty();
+        });
+    });
+</script>
+}
