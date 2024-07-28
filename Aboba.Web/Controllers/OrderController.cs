@@ -133,12 +133,13 @@ public class OrderController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Export(DateTime startDate, DateTime endDate, CancellationToken ct)
+    public async Task<IActionResult> Export(string? fileName, DateTime startDate, DateTime endDate,
+        CancellationToken ct)
     {
         var orders = await _orderRepository.GetOrdersByDateRangeAsync(startDate, endDate, ct);
-        var fileContent = await _orderExportService.ExportOrdersToExcelAsync(orders);
+        var fileContent = await _orderExportService.ExportOrdersToExcelAsync(startDate, endDate, fileName, orders);
+        var fileDownloadName = fileName ?? $"order {startDate:MM/dd/yyyy} - {endDate:MM/dd/yyyy}";
 
-        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Orders.xlsx");
+        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileDownloadName}.xlsx");
     }
-
 }
