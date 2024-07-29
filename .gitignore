@@ -8,10 +8,6 @@ app/
 appsettings.Development.json
 appsettings.Production.json
 appsettings.Local.json
-appsettings.json
-
-# DB
-AbobaDB.db
 
 # VS Code
 .vscode
