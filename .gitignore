@@ -158,7 +158,6 @@ ClientBin/
 *.jfm
 *.publishsettings
 node_modules/
-dist/
 orleans.codegen.cs
 
 # JetBrains Rider
