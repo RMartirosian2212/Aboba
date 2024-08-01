@@ -35,6 +35,13 @@ public class OrderRepository : IOrderRepository
             .ToListAsync(ct);
     }
 
+    public async Task<List<Order>> GetLastMonthOrdersAsync(DateTime startDate, DateTime endDate, CancellationToken ct)
+    {
+        return await _db.Orders
+            .Where(o => o.UploadDate >= startDate && o.UploadDate <= endDate)
+            .ToListAsync(ct);
+    }
+
     public async Task<Order> AddOrderAsync(Order order, CancellationToken ct)
     {
         _db.Orders.Add(order);
@@ -59,5 +66,12 @@ public class OrderRepository : IOrderRepository
                 await _db.SaveChangesAsync(ct);
             }
         }
+    }
+
+    public async Task DeleteLastMonthOrdersAsync(DateTime startDate, DateTime endDate, CancellationToken ct)
+    {
+        var ordersToDelete = await GetOrdersByDateRangeAsync(startDate, endDate, ct);
+        _db.Orders.RemoveRange(ordersToDelete);
+        await _db.SaveChangesAsync(ct);
     }
 }
