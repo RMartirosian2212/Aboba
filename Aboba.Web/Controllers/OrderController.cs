@@ -142,4 +142,18 @@ public class OrderController : Controller
 
         return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileDownloadName}.xlsx");
     }
+    
+    [HttpGet]
+    public async Task<IActionResult> OrdersFromPreviousMonth(CancellationToken ct)
+    {
+        var orders = await _mediator.Send(new GetLastMonthOrdersQuery(), ct);
+        return View(orders.Value);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> DeleteOrdersFromPreviousMonth(CancellationToken ct)
+    {
+        var orders = await _mediator.Send(new DeleteLastMonthOrdersCommand(), ct);
+        return RedirectToAction(nameof(Index));
+    }
 }
