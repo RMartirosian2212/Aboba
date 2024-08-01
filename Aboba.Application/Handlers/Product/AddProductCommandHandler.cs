@@ -14,12 +14,14 @@ public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Resul
     }
     public async Task<Result> Handle(AddProductCommand request, CancellationToken cancellationToken)
     {
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
+
         var product = new Domain.Entities.Product()
         {
             Name = request.product.Name,
             Price = request.product.Price,
-            CreatedAt = DateTime.UtcNow,
-            LastChange = DateTime.UtcNow
+            CreatedAt = localTime,
+            LastChange = localTime
         };
         await _productRepository.AddAsync(product, cancellationToken);
         return Result.FromSuccess();

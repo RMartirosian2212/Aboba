@@ -17,7 +17,8 @@ public class AddOrderProductCommandHandler : IRequestHandler<AddOrderProductComm
 
     public async Task<Result> Handle(AddOrderProductCommand request, CancellationToken cancellationToken)
     {
-        var result = new Domain.Entities.OrderProduct();
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
+
         foreach (var orderProduct in request.OrderProducts)
         {
             if (!string.IsNullOrEmpty(orderProduct.ProductName))
@@ -29,8 +30,8 @@ public class AddOrderProductCommandHandler : IRequestHandler<AddOrderProductComm
                     {
                         Name = orderProduct.ProductName,
                         Price = 0, // Setting the price to 0 for new products
-                        CreatedAt = DateTime.UtcNow,
-                        LastChange = DateTime.UtcNow
+                        CreatedAt = localTime,
+                        LastChange = localTime
                     };
                     await _productRepository.AddAsync(product, cancellationToken); // Saving a new product in the database
                 }
@@ -39,7 +40,7 @@ public class AddOrderProductCommandHandler : IRequestHandler<AddOrderProductComm
                 orderProduct.Product = product;
                 orderProduct.OrderId = request.OrderId;
                 orderProduct.IsInDb = true;
-                result = await _orderProductRepository.AddOrderProductAsync(orderProduct, cancellationToken);
+                await _orderProductRepository.AddOrderProductAsync(orderProduct, cancellationToken);
             }
         }
 

@@ -15,12 +15,14 @@ public class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Result<Do
 
     public async Task<Result<Domain.Entities.Order>> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.Now);
+
         var order = new Domain.Entities.Order
         {
             Title = request.OrderTitle,
             TotalPrice = request.TotalPrice,
-            UploadDate = DateTime.UtcNow,
-            LastChange = DateTime.UtcNow,
+            UploadDate = localTime,
+            LastChange = localTime,
             OrderProducts = new List<Domain.Entities.OrderProduct>()
         };
         

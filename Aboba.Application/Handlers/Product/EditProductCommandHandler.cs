@@ -15,14 +15,15 @@ public class EditProductCommandHandler : IRequestHandler<EditProductCommand,Resu
 
     public async Task<Result> Handle(EditProductCommand request, CancellationToken cancellationToken)
     {
-        
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
+
         var product = new Domain.Entities.Product()
         {
             Id = request.product.Id,
             Name = request.product.Name,
             Price = request.product.Price,
             CreatedAt = request.product.CreatedAt,
-            LastChange = DateTime.UtcNow
+            LastChange = localTime
         };
         await _productRepository.UpdateAsync(product, cancellationToken);
         return Result.FromSuccess();

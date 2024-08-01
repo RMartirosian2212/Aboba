@@ -95,7 +95,7 @@ public class OrderController : Controller
         }
 
         decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), ct);
-        var result = await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice, DateTime.UtcNow));
+        var result = await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice));
 
         return View(order);
     }
