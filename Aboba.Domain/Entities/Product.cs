@@ -17,6 +17,7 @@ public class Product
 
     public DateTime LastChange { get; set; }
     
+    public ICollection<EmployeeProduct> EmployeeProducts { get; set; } = new List<EmployeeProduct>();
     public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
     
 }

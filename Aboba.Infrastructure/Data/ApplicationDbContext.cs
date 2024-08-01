@@ -35,6 +35,11 @@ public class ApplicationDbContext : DbContext
             entity.HasIndex(e => e.Title).IsUnique();
         });
 
+        modelBuilder.Entity<Employee>(entity =>
+        {
+            entity.Property(e => e.Salary).HasColumnType("REAL");
+        });
+
         modelBuilder.Entity<OrderProduct>()
             .HasKey(op => new { op.OrderId, op.ProductId });
 
@@ -46,6 +51,19 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<OrderProduct>()
             .HasOne(op => op.Product)
             .WithMany(p => p.OrderProducts)
+            .HasForeignKey(op => op.ProductId);
+        
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasKey(op => new { op.EmployeeId, op.ProductId });
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(op => op.Employee)
+            .WithMany(o => o.EmployeeProducts)
+            .HasForeignKey(op => op.EmployeeId);
+
+        modelBuilder.Entity<EmployeeProduct>()
+            .HasOne(op => op.Product)
+            .WithMany(p => p.EmployeeProducts)
             .HasForeignKey(op => op.ProductId);
     }
 
