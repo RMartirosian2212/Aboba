@@ -14,7 +14,7 @@ public class DeleteLastMonthOrdersCommandHandler : IRequestHandler<DeleteLastMon
     }
     public async Task<Result> Handle(DeleteLastMonthOrdersCommand request, CancellationToken cancellationToken)
     {
-        var localTime = TimeHelper.GetCzechLocalTime(DateTime.Now);
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
         var previousMonth = localTime.AddMonths(-1);
         var startDate = new DateTime(previousMonth.Year, previousMonth.Month, 1);
         var endDate = startDate.AddMonths(1).AddDays(-1);

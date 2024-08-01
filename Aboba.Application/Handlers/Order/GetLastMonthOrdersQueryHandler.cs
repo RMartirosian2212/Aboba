@@ -15,7 +15,7 @@ public class GetLastMonthOrdersQueryHandler : IRequestHandler<GetLastMonthOrders
 
     public async Task<Result<IEnumerable<Domain.Entities.Order>>> Handle(GetLastMonthOrdersQuery request, CancellationToken cancellationToken)
     {
-        var localTime = TimeHelper.GetCzechLocalTime(DateTime.Now);
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
         var previousMonth = localTime.AddMonths(-1);
         var startDate = new DateTime(previousMonth.Year, previousMonth.Month, 1);
         var endDate = startDate.AddMonths(1).AddDays(-1);

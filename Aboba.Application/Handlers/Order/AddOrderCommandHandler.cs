@@ -15,7 +15,7 @@ public class AddOrderCommandHandler : IRequestHandler<AddOrderCommand, Result<Do
 
     public async Task<Result<Domain.Entities.Order>> Handle(AddOrderCommand request, CancellationToken cancellationToken)
     {
-        var localTime = TimeHelper.GetCzechLocalTime(DateTime.Now);
+        var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);
 
         var order = new Domain.Entities.Order
         {
