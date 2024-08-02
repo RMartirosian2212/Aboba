@@ -48,19 +48,32 @@
             <tbody id="productTableBody">
             @foreach (var item in Model)
             {
-            <tr class="product-row" data-price="@item.Price">
-                <td width="10%">@item.Id</td>
-                <td width="18%">@item.Name</td>
-                <td width="18%">@item.Price</td>
-                <td width="18%">@item.CreatedAt</td>
-                <td width="18%">@item.LastChange</td>
-                <td class="text-center">
-                    <div class="w-75 btn-group" role="group">
-                        <a class="btn btn-primary mx-2" asp-route-Id="@item.Id" asp-action="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
-                        <a class="btn btn-danger mx-2" asp-route-Id="@item.Id" asp-action="Delete"><i class="fa-solid fa-trash"></i></a>
-                    </div>
-                </td>
-            </tr>
+                <tr class="product-row" data-price="@item.Price">
+                    <td width="10%">@item.Id</td>
+                    <td width="18%">@item.Name</td>
+                    <td width="18%">
+                        @if (item.Price <= 0)
+                        {
+                            <p class="text-danger">@item.Price</p>
+                        }
+                        else
+                        {
+                            <p>@item.Price</p>
+                        }
+                    </td>
+                    <td width="18%">@item.CreatedAt</td>
+                    <td width="18%">@item.LastChange</td>
+                    <td class="text-center">
+                        <div class="w-75 btn-group" role="group">
+                            <a class="btn btn-primary mx-2" asp-route-Id="@item.Id" asp-action="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </a>
+                            <a class="btn btn-danger mx-2" asp-route-Id="@item.Id" asp-action="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
             }
             </tbody>
         </table>

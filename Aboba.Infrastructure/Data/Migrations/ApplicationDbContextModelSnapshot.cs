@@ -17,6 +17,39 @@ namespace Aboba.Infrastucture.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.7");
 
+            modelBuilder.Entity("Aboba.Domain.Entities.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("REAL");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Employee");
+                });
+
+            modelBuilder.Entity("Aboba.Domain.Entities.EmployeeProduct", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("EmployeeId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("EmployeeProduct");
+                });
+
             modelBuilder.Entity("Aboba.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
@@ -89,6 +122,25 @@ namespace Aboba.Infrastucture.Data.Migrations
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Aboba.Domain.Entities.EmployeeProduct", b =>
+                {
+                    b.HasOne("Aboba.Domain.Entities.Employee", "Employee")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Aboba.Domain.Entities.Product", "Product")
+                        .WithMany("EmployeeProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Aboba.Domain.Entities.OrderProduct", b =>
                 {
                     b.HasOne("Aboba.Domain.Entities.Order", "Order")
@@ -108,6 +160,11 @@ namespace Aboba.Infrastucture.Data.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("Aboba.Domain.Entities.Employee", b =>
+                {
+                    b.Navigation("EmployeeProducts");
+                });
+
             modelBuilder.Entity("Aboba.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderProducts");
@@ -115,6 +172,8 @@ namespace Aboba.Infrastucture.Data.Migrations
 
             modelBuilder.Entity("Aboba.Domain.Entities.Product", b =>
                 {
+                    b.Navigation("EmployeeProducts");
+
                     b.Navigation("OrderProducts");
                 });
 #pragma warning restore 612, 618
