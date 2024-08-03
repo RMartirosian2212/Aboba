@@ -1,11 +1,14 @@
 ﻿using Aboba.Application.Commands.Order;
 using Aboba.Application.Commands.OrderProduct;
 using Aboba.Application.Interfaces;
+using Aboba.Application.Queries.Employee;
 using Aboba.Application.Queries.Order;
 using Aboba.Application.Services;
 using Aboba.Domain.Entities;
+using Aboba.ViewModels;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Aboba.Controllers;
 
@@ -32,20 +35,20 @@ public class OrderController : Controller
         _orderExportService = orderExportService;
     }
 
-    public async Task<IActionResult> Index(CancellationToken ct)
+    public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
-        var orders = await _mediator.Send(new GetOrdersQuery(), ct);
+        var orders = await _mediator.Send(new GetOrdersQuery(), cancellationToken);
         return View(orders.Value);
     }
 
     [HttpGet]
-    public IActionResult Create(CancellationToken ct)
+    public IActionResult Create(CancellationToken cancellationToken)
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(IFormFile file, CancellationToken ct)
+    public async Task<IActionResult> Create(IFormFile file, CancellationToken cancellationToken)
     {
         if (file == null || file.Length == 0)
         {
@@ -53,18 +56,32 @@ public class OrderController : Controller
             return View("Index");
         }
 
-        var orderProducts = await _excelOrderProductProcessor.ProcessExcelFileAsync(file, ct);
-        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(orderProducts, ct);
+        var orderProducts = await _excelOrderProductProcessor.ProcessExcelFileAsync(file, cancellationToken);
+        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(orderProducts, cancellationToken);
+
+        var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken); 
+
+        var employeeSelectList = employees.Value.Select(e => new SelectListItem
+        {
+            Value = e.Id.ToString(),
+            Text = e.Name
+        }).ToList();
+        
+        var viewModel = new OrderViewModel
+        {
+            OrderProducts = orderProducts,
+            Employees = employeeSelectList
+        };
 
         ViewBag.FileName = file.FileName.Replace(".xlsx", "");
         ViewBag.TotalPrice = totalPrice;
 
-        return View(nameof(Create), orderProducts);
+        return View(nameof(Create), viewModel);
     }
 
-    [HttpPost]
+    /*[HttpPost]
     public async Task<IActionResult> SaveToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(orderTitle))
         {
@@ -72,38 +89,38 @@ public class OrderController : Controller
             return View(nameof(Create), orderProducts);
         }
 
-        var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), ct);
-        await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), ct);
+        var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), cancellationToken);
+        await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), cancellationToken);
 
         return RedirectToAction(nameof(Index));
-    }
+    }*/
 
     [HttpGet]
-    public async Task<IActionResult> Review(int id, CancellationToken ct)
+    public async Task<IActionResult> Review(int id, CancellationToken cancellationToken)
     {
-        var order = await _mediator.Send(new GetOrderByIdQuery(id), ct);
+        var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
         return View(order.Value);
     }
 
     [HttpPost, ActionName("Review")]
-    public async Task<IActionResult> ReviewPost(int orderId, CancellationToken ct)
+    public async Task<IActionResult> ReviewPost(int orderId, CancellationToken cancellationToken)
     {
-        var order = await _orderRepository.GetOrderByIdAsync(orderId, ct);
+        var order = await _orderRepository.GetOrderByIdAsync(orderId, cancellationToken);
         if (order == null)
         {
             return NotFound();
         }
 
-        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), ct);
+        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
         var result = await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice));
 
         return View(order);
     }
 
     [HttpGet]
-    public async Task<IActionResult> LoadDeleteConfirmation(int id, CancellationToken ct)
+    public async Task<IActionResult> LoadDeleteConfirmation(int id, CancellationToken cancellationToken)
     {
-        var order = await _mediator.Send(new GetOrderByIdQuery(id), ct);
+        var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
 
         if (order == null)
         {
@@ -114,15 +131,15 @@ public class OrderController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> DeleteOrder(int id, CancellationToken ct)
+    public async Task<IActionResult> DeleteOrder(int id, CancellationToken cancellationToken)
     {
-        var order = await _mediator.Send(new GetOrderByIdQuery(id), ct);
+        var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
         if (order is null)
         {
             return BadRequest();
         }
 
-        await _mediator.Send(new DeleteOrderCommand(order.Value), ct);
+        await _mediator.Send(new DeleteOrderCommand(order.Value), cancellationToken);
         return RedirectToAction("Index");
     }
 
@@ -134,26 +151,27 @@ public class OrderController : Controller
 
     [HttpPost]
     public async Task<IActionResult> Export(string? fileName, DateTime startDate, DateTime endDate,
-        CancellationToken ct)
+        CancellationToken cancellationToken)
     {
-        var orders = await _orderRepository.GetOrdersByDateRangeAsync(startDate, endDate, ct);
+        var orders = await _orderRepository.GetOrdersByDateRangeAsync(startDate, endDate, cancellationToken);
         var fileContent = await _orderExportService.ExportOrdersToExcelAsync(startDate, endDate, fileName, orders);
         var fileDownloadName = fileName ?? $"order {startDate:MM/dd/yyyy} - {endDate:MM/dd/yyyy}";
 
-        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"{fileDownloadName}.xlsx");
+        return File(fileContent, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            $"{fileDownloadName}.xlsx");
     }
-    
+
     [HttpGet]
-    public async Task<IActionResult> OrdersFromPreviousMonth(CancellationToken ct)
+    public async Task<IActionResult> OrdersFromPreviousMonth(CancellationToken cancellationToken)
     {
-        var orders = await _mediator.Send(new GetLastMonthOrdersQuery(), ct);
+        var orders = await _mediator.Send(new GetLastMonthOrdersQuery(), cancellationToken);
         return View(orders.Value);
     }
 
     [HttpPost]
-    public async Task<IActionResult> DeleteOrdersFromPreviousMonth(CancellationToken ct)
+    public async Task<IActionResult> DeleteOrdersFromPreviousMonth(CancellationToken cancellationToken)
     {
-        var orders = await _mediator.Send(new DeleteLastMonthOrdersCommand(), ct);
+        var orders = await _mediator.Send(new DeleteLastMonthOrdersCommand(), cancellationToken);
         return RedirectToAction(nameof(Index));
     }
 }
