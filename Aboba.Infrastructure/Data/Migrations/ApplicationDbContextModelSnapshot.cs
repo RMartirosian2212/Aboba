@@ -32,7 +32,7 @@ namespace Aboba.Infrastucture.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employee");
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Aboba.Domain.Entities.EmployeeProduct", b =>
@@ -47,7 +47,7 @@ namespace Aboba.Infrastucture.Data.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("EmployeeProduct");
+                    b.ToTable("EmployeeProducts");
                 });
 
             modelBuilder.Entity("Aboba.Domain.Entities.Order", b =>

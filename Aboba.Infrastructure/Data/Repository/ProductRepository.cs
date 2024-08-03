@@ -20,7 +20,7 @@ public class ProductRepository : IProductRepository
 
     public async Task<Product?> GetAsync(int? id, CancellationToken ct)
     {
-        return await _db.Products.FirstOrDefaultAsync(x => x.Id == id, ct);;
+        return await _db.Products.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 
     public async Task<Product?> GetProductByNameAsync(string name, CancellationToken ct)

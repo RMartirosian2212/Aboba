@@ -17,6 +17,8 @@ public class ApplicationDbContext : DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
+    public DbSet<Employee?> Employees { get; set; }
+    public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

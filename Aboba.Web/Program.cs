@@ -17,6 +17,8 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetProductsQu
     .AddScoped<IProductRepository, ProductRepository>()
     .AddScoped<IOrderRepository, OrderRepository>()
     .AddScoped<IOrderProductRepository, OrderProductRepository>()
+    .AddScoped<IEmployeeRepository, EmployeeRepository>()
+    .AddScoped<IEmployeeProductRepository, EmployeeProductRepository>()
     .AddScoped<IOrderService, OrderService>()
     .AddScoped<IExcelOrderProductProcessor, ExcelOrderProductProcessor>()
     .AddScoped<IOrderExportService, OrderExportService>();
