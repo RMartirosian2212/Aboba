@@ -1,4 +1,6 @@
-﻿using Aboba.Application.Commands.Order;
+﻿using Aboba.Application.Commands.Employee;
+using Aboba.Application.Commands.EmployeeProduct;
+using Aboba.Application.Commands.Order;
 using Aboba.Application.Commands.OrderProduct;
 using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.Employee;
@@ -59,14 +61,14 @@ public class OrderController : Controller
         var orderProducts = await _excelOrderProductProcessor.ProcessExcelFileAsync(file, cancellationToken);
         decimal totalPrice = await _orderService.CalculateTotalPriceAsync(orderProducts, cancellationToken);
 
-        var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken); 
+        var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
 
         var employeeSelectList = employees.Value.Select(e => new SelectListItem
         {
             Value = e.Id.ToString(),
             Text = e.Name
         }).ToList();
-        
+
         var viewModel = new OrderViewModel
         {
             OrderProducts = orderProducts,
@@ -79,21 +81,34 @@ public class OrderController : Controller
         return View(nameof(Create), viewModel);
     }
 
-    /*[HttpPost]
+    [HttpPost]
     public async Task<IActionResult> SaveToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(orderTitle))
+        /*if (string.IsNullOrEmpty(orderTitle))
         {
             ModelState.AddModelError("OrderTitle", "Order title is required.");
             return View(nameof(Create), orderProducts);
-        }
+        }*/
 
         var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), cancellationToken);
         await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), cancellationToken);
 
+        // Привязка продуктов к сотрудникам и обновление зарплаты
+        foreach (var orderProduct in orderProducts)
+        {
+            if (orderProduct.EmployeeId.HasValue)
+            {
+                var product = await _productRepository.GetAsync(orderProduct.ProductId, cancellationToken);
+                await _mediator.Send(
+                    new AddEmployeeProductCommand(orderProduct.EmployeeId.Value, product.Id, product.Price),
+                    cancellationToken);
+            }
+        }
+
         return RedirectToAction(nameof(Index));
-    }*/
+    }
+
 
     [HttpGet]
     public async Task<IActionResult> Review(int id, CancellationToken cancellationToken)
@@ -111,7 +126,8 @@ public class OrderController : Controller
             return NotFound();
         }
 
-        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
+        decimal totalPrice =
+            await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
         var result = await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice));
 
         return View(order);

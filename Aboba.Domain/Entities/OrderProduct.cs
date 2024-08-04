@@ -13,4 +13,5 @@ public class OrderProduct
 
     [NotMapped] public string ProductName { get; set; }
     [NotMapped] public bool IsInDb { get; set; }
+    public int? EmployeeId { get; set; }
 }
