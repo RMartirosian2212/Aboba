@@ -4,6 +4,7 @@ using Aboba.Application.Commands.Order;
 using Aboba.Application.Commands.OrderProduct;
 using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.Employee;
+using Aboba.Application.Queries.GetProducts;
 using Aboba.Application.Queries.Order;
 using Aboba.Application.Services;
 using Aboba.Domain.Entities;
@@ -85,25 +86,34 @@ public class OrderController : Controller
     public async Task<IActionResult> SaveToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
         CancellationToken cancellationToken)
     {
-        /*if (string.IsNullOrEmpty(orderTitle))
+        if (string.IsNullOrEmpty(orderTitle))
         {
+            var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
+
+            var employeeSelectList = employees.Value.Select(e => new SelectListItem
+            {
+                Value = e.Id.ToString(),
+                Text = e.Name
+            }).ToList();
+
+            var viewModel = new OrderViewModel
+            {
+                OrderProducts = orderProducts,
+                Employees = employeeSelectList
+            };
             ModelState.AddModelError("OrderTitle", "Order title is required.");
-            return View(nameof(Create), orderProducts);
-        }*/
+            return View(nameof(Create), viewModel);
+        }
 
         var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), cancellationToken);
         await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), cancellationToken);
 
-        // Привязка продуктов к сотрудникам и обновление зарплаты
         foreach (var orderProduct in orderProducts)
         {
-            if (orderProduct.EmployeeId.HasValue)
-            {
-                var product = await _productRepository.GetAsync(orderProduct.ProductId, cancellationToken);
-                await _mediator.Send(
-                    new AddEmployeeProductCommand(orderProduct.EmployeeId.Value, product.Id, product.Price),
-                    cancellationToken);
-            }
+            var product = await _mediator.Send(new GetProductByIdQuery(orderProduct.ProductId), cancellationToken);
+            await _mediator.Send(
+                new AddEmployeeProductCommand(orderProduct.EmployeeId, product.Value.Id, product.Value.Price),
+                cancellationToken);
         }
 
         return RedirectToAction(nameof(Index));
@@ -114,6 +124,11 @@ public class OrderController : Controller
     public async Task<IActionResult> Review(int id, CancellationToken cancellationToken)
     {
         var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
+        // Подгружаем информацию о сотрудниках
+        foreach (var orderProduct in order.Value.OrderProducts)
+        {
+            var employee = await _mediator.Send(new GetEmployeeByIdQuery(orderProduct.EmployeeId), cancellationToken);
+        }
         return View(order.Value);
     }
 

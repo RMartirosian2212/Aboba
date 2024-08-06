@@ -45,17 +45,20 @@
             <tr>
                 <th>Product Id</th>
                 <th>Product Name</th>
-                <th>Price</th>
                 <th>Quantity</th>
+                <th>Individual Price</th>
+                <th>Total Product Price</th>
+                <th>Employee</th>
             </tr>
             </thead>
             <tbody>
             @foreach (var item in Model.OrderProducts)
             {
                 <tr>
-                    <td>@item.Product.Id</td>
-                    <td>@item.Product.Name</td>
-                    <td>
+                    <td width="10%">@item.Product.Id</td>
+                    <td width="30%">@item.Product.Name</td>
+                    <td width="10%">@item.Quantity</td>
+                    <td width="15%">
                         @if (item.Product.Price > 0)
                         {
                             <p>@item.Product.Price</p>
@@ -65,7 +68,17 @@
                             <p class="text-danger">@item.Product.Price</p>
                         }
                     </td>
-                    <td>@item.Quantity</td>
+                    <td width="15%">@(item.Product.Price * item.Quantity)</td>
+                    <td>
+                        @if (item.Employee != null)
+                        {
+                            <p>@item.Employee.Name</p>
+                        }
+                        else
+                        {
+                            <p>No Employee Assigned</p>
+                        }
+                    </td>
                 </tr>
             }
             </tbody>

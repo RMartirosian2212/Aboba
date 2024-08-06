@@ -9,9 +9,12 @@ public class OrderProduct
 
     public int? ProductId { get; set; }
     public Product Product { get; set; }
+    public int? EmployeeId { get; set; }
+    public Employee Employee { get; set; }
+    
     public int Quantity { get; set; }
 
     [NotMapped] public string ProductName { get; set; }
     [NotMapped] public bool IsInDb { get; set; }
-    public int? EmployeeId { get; set; }
+
 }

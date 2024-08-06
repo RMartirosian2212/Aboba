@@ -21,6 +21,12 @@ public class EmployeeProductRepository : IEmployeeProductRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<EmployeeProduct?> GetByEmployeeIdAndProductIdAsync(int employeeId, int productId, CancellationToken cancellationToken)
+    {
+        return await _db.EmployeeProducts
+            .FirstOrDefaultAsync(ep => ep.EmployeeId == employeeId && ep.ProductId == productId, cancellationToken);
+    }
+
     public async Task AddAsync(EmployeeProduct employeeProduct, CancellationToken cancellationToken)
     {
         _db.EmployeeProducts.Add(employeeProduct);

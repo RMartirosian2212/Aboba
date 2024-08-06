@@ -29,6 +29,8 @@
                     <th>Product Name</th>
                     <th>In db</th>
                     <th>Quantity</th>
+                    <th>Individual Price</th>
+                    <th>Total Product Price</th>
                     <th>Employee</th>
                 </tr>
                 </thead>
@@ -36,8 +38,8 @@
                 @for (int i = 0; i < Model.OrderProducts.Count; i++)
                 {
                     <tr>
-                        <td>@Model.OrderProducts[i].Product?.Name @Model.OrderProducts[i].ProductName</td>
-                        <td>
+                        <td width="30%">@Model.OrderProducts[i].Product?.Name @Model.OrderProducts[i].ProductName</td>
+                        <td width="12%">
                             @if (Model.OrderProducts[i].IsInDb)
                             {
                                 if (Model.OrderProducts[i].Product.Price != 0)
@@ -54,18 +56,16 @@
                                 <p class="text-danger">Not found in Database</p>
                             }
                         </td>
-                        <td>@Model.OrderProducts[i].Quantity</td>
+                        <td width="10%">@Model.OrderProducts[i].Quantity</td>
+                        <td width="10%">@Model.OrderProducts[i].Product.Price</td>
+                        <td width="15%">@(Model.OrderProducts[i].Quantity * Model.OrderProducts[i].Product.Price)</td>
                         <td>
                             <input type="hidden" name="orderProducts[@i].ProductId" value="@Model.OrderProducts[i].ProductId"/>
                             <input type="hidden" name="orderProducts[@i].ProductName" value="@Model.OrderProducts[i].Product?.Name"/>
                             <input type="hidden" name="orderProducts[@i].Quantity" value="@Model.OrderProducts[i].Quantity"/>
                             <input type="hidden" name="orderProducts[@i].IsInDb" value="@Model.OrderProducts[i].IsInDb"/>
-                            <select class="form-control" name="orderProducts[@i].EmployeeId">
-                                <option value="">Select Employee</option>
-                                @foreach (var employee in Model.Employees)
-                                {
-                                    <option value="@employee.Value">@employee.Text</option>
-                                }
+                            <select asp-for="@Model.OrderProducts[i].EmployeeId" class="form-control" asp-items="@Model.Employees">
+                                <option selected>No employee</option>
                             </select>
                         </td>
                     </tr>
