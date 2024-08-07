@@ -12,6 +12,6 @@ public class Employee
 
     [Required]
     public decimal Salary { get; set; }
-
-    public ICollection<EmployeeProduct> EmployeeProducts { get; set; } = new List<EmployeeProduct>();
+    
+    public ICollection<OrderProduct> OrderProducts { get; set; } = new List<OrderProduct>();
 }

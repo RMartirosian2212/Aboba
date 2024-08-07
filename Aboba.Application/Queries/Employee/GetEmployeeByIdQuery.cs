@@ -2,4 +2,4 @@
 
 namespace Aboba.Application.Queries.Employee;
 
-public record GetEmployeeByIdQuery(int id) : IRequest<Result<Domain.Entities.Employee>>;
+public record GetEmployeeByIdQuery(int Id) : IRequest<Result<Domain.Entities.Employee>>;

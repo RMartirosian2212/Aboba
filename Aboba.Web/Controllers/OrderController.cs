@@ -1,6 +1,4 @@
-﻿using Aboba.Application.Commands.Employee;
-using Aboba.Application.Commands.EmployeeProduct;
-using Aboba.Application.Commands.Order;
+﻿using Aboba.Application.Commands.Order;
 using Aboba.Application.Commands.OrderProduct;
 using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.Employee;
@@ -82,8 +80,9 @@ public class OrderController : Controller
         return View(nameof(Create), viewModel);
     }
 
+
     [HttpPost]
-    public async Task<IActionResult> SaveToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
+    public async Task<IActionResult> SaveOrderToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(orderTitle))
@@ -107,15 +106,6 @@ public class OrderController : Controller
 
         var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), cancellationToken);
         await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), cancellationToken);
-
-        foreach (var orderProduct in orderProducts)
-        {
-            var product = await _mediator.Send(new GetProductByIdQuery(orderProduct.ProductId), cancellationToken);
-            await _mediator.Send(
-                new AddEmployeeProductCommand(orderProduct.EmployeeId, product.Value.Id, product.Value.Price),
-                cancellationToken);
-        }
-
         return RedirectToAction(nameof(Index));
     }
 
@@ -124,11 +114,6 @@ public class OrderController : Controller
     public async Task<IActionResult> Review(int id, CancellationToken cancellationToken)
     {
         var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
-        // Подгружаем информацию о сотрудниках
-        foreach (var orderProduct in order.Value.OrderProducts)
-        {
-            var employee = await _mediator.Send(new GetEmployeeByIdQuery(orderProduct.EmployeeId), cancellationToken);
-        }
         return View(order.Value);
     }
 

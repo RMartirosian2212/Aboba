@@ -14,7 +14,7 @@ public class GetEmployeeByIdQueryHandler : IRequestHandler<GetEmployeeByIdQuery,
     }
     public async Task<Result<Domain.Entities.Employee>> Handle(GetEmployeeByIdQuery request, CancellationToken cancellationToken)
     {
-        var employee = await _employeeRepository.GetByIdAsync(request.id, cancellationToken);
+        var employee = await _employeeRepository.GetByIdAsync(request.Id, cancellationToken);
         if (employee is null)
         {
             return Result<Domain.Entities.Employee>.FromError("No employee with that Id");

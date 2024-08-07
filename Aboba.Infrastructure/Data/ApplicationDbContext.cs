@@ -18,7 +18,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderProduct> OrderProducts { get; set; }
     public DbSet<Employee> Employees { get; set; }
-    public DbSet<EmployeeProduct> EmployeeProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,18 +54,11 @@ public class ApplicationDbContext : DbContext
             .WithMany(p => p.OrderProducts)
             .HasForeignKey(op => op.ProductId);
         
-        modelBuilder.Entity<EmployeeProduct>()
-            .HasKey(op => new { op.EmployeeId, op.ProductId });
-
-        modelBuilder.Entity<EmployeeProduct>()
+        modelBuilder.Entity<OrderProduct>()
             .HasOne(op => op.Employee)
-            .WithMany(o => o.EmployeeProducts)
-            .HasForeignKey(op => op.EmployeeId);
-
-        modelBuilder.Entity<EmployeeProduct>()
-            .HasOne(op => op.Product)
-            .WithMany(p => p.EmployeeProducts)
-            .HasForeignKey(op => op.ProductId);
+            .WithMany(p => p.OrderProducts)
+            .HasForeignKey(op => op.EmployeeId)
+            .IsRequired(false);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

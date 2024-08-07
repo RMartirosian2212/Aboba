@@ -70,14 +70,15 @@
                     </td>
                     <td width="15%">@(item.Product.Price * item.Quantity)</td>
                     <td>
-                        @if (item.Employee != null)
+                        @if (item.EmployeeId != null)
                         {
                             <p>@item.Employee.Name</p>
                         }
                         else
                         {
-                            <p>No Employee Assigned</p>
+                            <p class="text-danger">No Employee </p>
                         }
+                        
                     </td>
                 </tr>
             }

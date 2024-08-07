@@ -23,6 +23,8 @@ public class OrderRepository : IOrderRepository
         return await _db.Orders
             .Include(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
+            .Include(o => o.OrderProducts)
+            .ThenInclude(oe => oe.Employee)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
     }
 

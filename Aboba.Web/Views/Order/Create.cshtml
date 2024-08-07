@@ -18,7 +18,7 @@
     <br/>
     @if (Model != null && Model.OrderProducts.Count > 0)
     {
-        <form method="post" asp-action="SaveToDb">
+        <form method="post" asp-action="SaveOrderToDb">
             <input type="text" class="form-control mb-2" name="orderTitle" value="@ViewBag.FileName" placeholder="Order title" required/>
             <button type="submit" class="btn btn-primary mb-2">Save to Database</button>
             <input type="hidden" name="totalPrice" value="@ViewBag.TotalPrice"/>
