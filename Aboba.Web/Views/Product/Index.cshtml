@@ -14,6 +14,9 @@
     <br/>
     <div class="row">
         <div class="col-md-3">
+            <input type="text" id="searchName" class="form-control" placeholder="Search by Name"/>
+        </div>
+        <div class="col-md-3">
             <input type="number" id="minPrice" class="form-control" placeholder="Min Price"/>
         </div>
         <div class="col-md-3">
@@ -27,28 +30,18 @@
         <table class="table table-bordered table-striped" width="100%">
             <thead>
             <tr>
-                <th>
-                    Id
-                </th>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Price
-                </th>
-                <th>
-                    Created At
-                </th>
-                <th>
-                    Last Change
-                </th>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Created At</th>
+                <th>Last Change</th>
                 <th></th>
             </tr>
             </thead>
             <tbody id="productTableBody">
             @foreach (var item in Model)
             {
-                <tr class="product-row" data-price="@item.Price">
+                <tr class="product-row" data-price="@item.Price" data-name="@item.Name.ToLower()">
                     <td width="10%">@item.Id</td>
                     <td width="18%">@item.Name</td>
                     <td width="18%">
@@ -86,17 +79,21 @@
 
 @section Scripts {
     <script>
-
     function filterProducts() {
-        var minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-        var maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
+        var minPrice = parseFloat(document.getElementById('minPrice').value);
+        var maxPrice = parseFloat(document.getElementById('maxPrice').value);
+        var searchName = document.getElementById('searchName').value.toLowerCase();
+        
+        if (isNaN(minPrice)) minPrice = 0;
+        if (isNaN(maxPrice)) maxPrice = Number.MAX_VALUE;
 
         var rows = document.querySelectorAll('.product-row');
 
         rows.forEach(function (row) {
             var price = parseFloat(row.getAttribute('data-price'));
+            var name = row.getAttribute('data-name');
 
-            if (price >= minPrice && price <= maxPrice) {
+            if (price >= minPrice && price <= maxPrice && name.includes(searchName)) {
                 row.style.display = '';
             } else {
                 row.style.display = 'none';
@@ -106,5 +103,6 @@
 
     document.getElementById('minPrice').addEventListener('input', filterProducts);
     document.getElementById('maxPrice').addEventListener('input', filterProducts);
+    document.getElementById('searchName').addEventListener('input', filterProducts);
 </script>
 }
