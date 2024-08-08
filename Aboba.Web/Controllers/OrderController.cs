@@ -18,6 +18,7 @@ public class OrderController : Controller
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IOrderProductRepository _orderProductRepository;
+    private readonly IEmployeeRepository _employeeRepository;
     private readonly IOrderService _orderService;
     private readonly IMediator _mediator;
     private readonly IExcelOrderProductProcessor _excelOrderProductProcessor;
@@ -27,7 +28,7 @@ public class OrderController : Controller
     public OrderController(IOrderRepository orderRepository, IOrderService orderService,
         IProductRepository productRepository, IOrderProductRepository orderProductRepository, IMediator mediator,
         IExcelOrderProductProcessor excelOrderProductProcessor, IOrderExportService orderExportService,
-        IEmployeeSalaryCalculator employeeSalaryCalculator)
+        IEmployeeSalaryCalculator employeeSalaryCalculator, IEmployeeRepository employeeRepository)
     {
         _orderRepository = orderRepository;
         _orderService = orderService;
@@ -37,6 +38,7 @@ public class OrderController : Controller
         _excelOrderProductProcessor = excelOrderProductProcessor;
         _orderExportService = orderExportService;
         _employeeSalaryCalculator = employeeSalaryCalculator;
+        _employeeRepository = employeeRepository;
     }
 
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -178,6 +180,8 @@ public class OrderController : Controller
         {
             return BadRequest();
         }
+
+        await _employeeSalaryCalculator.RecalculateSalariesForOrderDeletion(id, cancellationToken);
 
         await _mediator.Send(new DeleteOrderCommand(order.Value), cancellationToken);
         return RedirectToAction("Index");

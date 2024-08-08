@@ -6,5 +6,6 @@ public interface IEmployeeSalaryCalculator
 {
     Task CalculateEmployeeSalary(List<OrderProduct> orderProducts, CancellationToken cancellationToken);
     Task RecalculateSalaryOnProductPriceChange(int productId, decimal newPrice, CancellationToken cancellationToken);
+    Task RecalculateSalariesForOrderDeletion(int orderId, CancellationToken cancellationToken);
 
 }

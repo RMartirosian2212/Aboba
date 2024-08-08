@@ -61,7 +61,7 @@ public class OrderRepository : IOrderRepository
     public async Task DeleteOrderAsync(Order order, CancellationToken ct)
     {
         {
-            var orderToDelete = await _db.Orders.FindAsync(order.Id, ct);
+            var orderToDelete = await _db.Orders.FirstOrDefaultAsync(x => x.Id == order.Id, ct);
             if (orderToDelete != null)
             {
                 _db.Orders.Remove(orderToDelete);

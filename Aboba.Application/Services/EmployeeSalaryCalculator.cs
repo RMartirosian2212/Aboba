@@ -46,11 +46,9 @@ public class EmployeeSalaryCalculator : IEmployeeSalaryCalculator
                 var employee = await _employeeRepository.GetByIdAsync(orderProduct.EmployeeId.Value, cancellationToken);
                 if (employee != null)
                 {
-                    // Вычисляем старую стоимость и новую стоимость
-                    var oldPrice = orderProduct.Product.Price; // Здесь предполагается, что старую цену продукта можно получить из OrderProduct
+                    var oldPrice = orderProduct.Product.Price;
                     var quantity = orderProduct.Quantity;
 
-                    // Пересчитываем зарплату
                     employee.Salary -= oldPrice * quantity;
                     employee.Salary += newPrice * quantity;
 
@@ -60,4 +58,21 @@ public class EmployeeSalaryCalculator : IEmployeeSalaryCalculator
         }
     }
 
+    public async Task RecalculateSalariesForOrderDeletion(int orderId, CancellationToken cancellationToken)
+    {
+        var orderProducts = await _orderProductRepository.GetOrderProductsByOrderId(orderId, cancellationToken);
+        
+        foreach (var orderProduct in orderProducts)
+        {
+            if (orderProduct.EmployeeId.HasValue && orderProduct.EmployeeId.Value != 0)
+            {
+                var employee = await _employeeRepository.GetByIdAsync(orderProduct.EmployeeId.Value, cancellationToken);
+                if (employee != null)
+                {
+                    employee.Salary -= orderProduct.Product.Price * orderProduct.Quantity;
+                    await _employeeRepository.UpdateAsync(employee, cancellationToken);
+                }
+            }
+        }
+    }
 }
