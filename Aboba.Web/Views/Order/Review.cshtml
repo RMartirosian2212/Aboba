@@ -70,18 +70,15 @@
                     </td>
                     <td width="15%">@(item.Product.Price * item.Quantity)</td>
                     <td>
-                        @*@if (item.EmployeeId != null)
+                        @if (item.EmployeeId != null)
                         {
                             <p>@item.Employee.Name</p>
                         }
                         else
                         {
                             <p class="text-danger">No Employee </p>
-                        }*@
-                        <select asp-for="@item.Employee.Id" class="form-control" asp-items="@item">
-                            <option selected>No employee</option>
-                        </select>
-                        
+                        }
+
                     </td>
                 </tr>
             }

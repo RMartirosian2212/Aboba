@@ -124,24 +124,9 @@ public class OrderController : Controller
             return NotFound();
         }
 
-        var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
-        var employeeSelectList = employees.Value.Select(e => new SelectListItem
-        {
-            Value = e.Id.ToString(),
-            Text = e.Name
-        }).ToList();
-
-        var viewModel = new OrderViewModel
-        {
-            OrderProducts = order.Value.OrderProducts.ToList(),
-            Employees = employeeSelectList,
-            SelectedEmployees = order.Value.OrderProducts.ToDictionary(op => op.ProductId, op => op.EmployeeId)
-        };
-
-        return View(viewModel);
+        return View(order.Value);
     }
     
-    /*
     [HttpPost, ActionName("Review")]
     public async Task<IActionResult> ReviewPost(int orderId, CancellationToken cancellationToken)
     {
@@ -151,13 +136,26 @@ public class OrderController : Controller
             return NotFound();
         }
 
-        decimal totalPrice =
-            await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
-        var result = await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice));
+        // Пересчитываем общую стоимость заказа
+        decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
+        await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice), cancellationToken);
+        
+        var productIds = order.OrderProducts
+            .Select(op => op.Product.Id)
+            .Distinct()
+            .ToList();
+        
+        foreach (var productId in productIds)
+        {
+            var product = await _productRepository.GetByIdAsync(productId, cancellationToken);
+            if (product != null)
+            {
+                await _employeeSalaryCalculator.RecalculateSalaryOnProductPriceChange(productId, product.Price, cancellationToken);
+            }
+        }
 
-        return View(order);
+        return RedirectToAction(nameof(Review), new { id = orderId });
     }
-    */
 
     [HttpGet]
     public async Task<IActionResult> LoadDeleteConfirmation(int id, CancellationToken cancellationToken)
