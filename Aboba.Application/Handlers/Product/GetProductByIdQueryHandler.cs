@@ -15,7 +15,7 @@ public class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, R
 
     public async Task<Result<Domain.Entities.Product>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
-        var product = await _productRepository.GetAsync(request.id, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(request.id, cancellationToken);
         if (product == null)
         {
             return new Error("Product with this Id was not found");

@@ -22,10 +22,12 @@ public class OrderController : Controller
     private readonly IMediator _mediator;
     private readonly IExcelOrderProductProcessor _excelOrderProductProcessor;
     private readonly IOrderExportService _orderExportService;
+    private readonly IEmployeeSalaryCalculator _employeeSalaryCalculator;
 
     public OrderController(IOrderRepository orderRepository, IOrderService orderService,
         IProductRepository productRepository, IOrderProductRepository orderProductRepository, IMediator mediator,
-        IExcelOrderProductProcessor excelOrderProductProcessor, IOrderExportService orderExportService)
+        IExcelOrderProductProcessor excelOrderProductProcessor, IOrderExportService orderExportService,
+        IEmployeeSalaryCalculator employeeSalaryCalculator)
     {
         _orderRepository = orderRepository;
         _orderService = orderService;
@@ -34,6 +36,7 @@ public class OrderController : Controller
         _mediator = mediator;
         _excelOrderProductProcessor = excelOrderProductProcessor;
         _orderExportService = orderExportService;
+        _employeeSalaryCalculator = employeeSalaryCalculator;
     }
 
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -82,7 +85,8 @@ public class OrderController : Controller
 
 
     [HttpPost]
-    public async Task<IActionResult> SaveOrderToDb(string orderTitle, decimal totalPrice, List<OrderProduct> orderProducts,
+    public async Task<IActionResult> SaveOrderToDb(string orderTitle, decimal totalPrice,
+        List<OrderProduct> orderProducts,
         CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(orderTitle))
@@ -106,6 +110,7 @@ public class OrderController : Controller
 
         var order = await _mediator.Send(new AddOrderCommand(orderTitle, totalPrice), cancellationToken);
         await _mediator.Send(new AddOrderProductCommand(orderProducts, order.Value.Id), cancellationToken);
+        await _employeeSalaryCalculator.CalculateEmployeeSalary(orderProducts, cancellationToken);
         return RedirectToAction(nameof(Index));
     }
 
@@ -114,9 +119,29 @@ public class OrderController : Controller
     public async Task<IActionResult> Review(int id, CancellationToken cancellationToken)
     {
         var order = await _mediator.Send(new GetOrderByIdQuery(id), cancellationToken);
-        return View(order.Value);
-    }
+        if (order == null)
+        {
+            return NotFound();
+        }
 
+        var employees = await _mediator.Send(new GetEmployeesQuery(), cancellationToken);
+        var employeeSelectList = employees.Value.Select(e => new SelectListItem
+        {
+            Value = e.Id.ToString(),
+            Text = e.Name
+        }).ToList();
+
+        var viewModel = new OrderViewModel
+        {
+            OrderProducts = order.Value.OrderProducts.ToList(),
+            Employees = employeeSelectList,
+            SelectedEmployees = order.Value.OrderProducts.ToDictionary(op => op.ProductId, op => op.EmployeeId)
+        };
+
+        return View(viewModel);
+    }
+    
+    /*
     [HttpPost, ActionName("Review")]
     public async Task<IActionResult> ReviewPost(int orderId, CancellationToken cancellationToken)
     {
@@ -132,6 +157,7 @@ public class OrderController : Controller
 
         return View(order);
     }
+    */
 
     [HttpGet]
     public async Task<IActionResult> LoadDeleteConfirmation(int id, CancellationToken cancellationToken)

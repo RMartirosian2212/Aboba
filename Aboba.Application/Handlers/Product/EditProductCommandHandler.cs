@@ -12,7 +12,7 @@ public class EditProductCommandHandler : IRequestHandler<EditProductCommand,Resu
     {
         _productRepository = productRepository;
     }
-
+ 
     public async Task<Result> Handle(EditProductCommand request, CancellationToken cancellationToken)
     {
         var localTime = TimeHelper.GetCzechLocalTime(DateTime.UtcNow);

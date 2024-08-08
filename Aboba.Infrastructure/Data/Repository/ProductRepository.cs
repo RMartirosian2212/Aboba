@@ -13,12 +13,12 @@ public class ProductRepository : IProductRepository
         _db = db;
     }
 
-    public async Task<IEnumerable<Product?>> GetAllProductsAsync(CancellationToken ct)
+    public async Task<IEnumerable<Product>> GetAllProductsAsync(CancellationToken ct)
     {
         return await _db.Products.ToListAsync(ct);
     }
 
-    public async Task<Product?> GetAsync(int? id, CancellationToken ct)
+    public async Task<Product?> GetByIdAsync(int? id, CancellationToken ct)
     {
         return await _db.Products.FirstOrDefaultAsync(x => x.Id == id, ct);
     }
@@ -37,6 +37,11 @@ public class ProductRepository : IProductRepository
 
     public async Task UpdateAsync(Product product, CancellationToken ct)
     {
+        var existingProduct = await GetByIdAsync(product.Id, ct);
+        if (existingProduct != null)
+        {
+            _db.Entry(existingProduct).State = EntityState.Detached;
+        }
         _db.Products.Update(product);
         await _db.SaveChangesAsync(ct);
     }

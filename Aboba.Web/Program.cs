@@ -20,7 +20,8 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetProductsQu
     .AddScoped<IEmployeeRepository, EmployeeRepository>()
     .AddScoped<IOrderService, OrderService>()
     .AddScoped<IExcelOrderProductProcessor, ExcelOrderProductProcessor>()
-    .AddScoped<IOrderExportService, OrderExportService>();
+    .AddScoped<IOrderExportService, OrderExportService>()
+    .AddScoped<IEmployeeSalaryCalculator, EmployeeSalaryCalculator>();
 
 
 var app = builder.Build();

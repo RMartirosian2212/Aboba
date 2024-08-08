@@ -1,6 +1,7 @@
 ﻿using Aboba.Application.Commands.Product;
 using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.GetProducts;
+using Aboba.Application.Services;
 using Aboba.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace Aboba.Controllers;
 public class ProductController : Controller
 {
     private readonly IMediator _mediator;
+    private readonly IEmployeeSalaryCalculator _employeeSalaryCalculator;
 
-    public ProductController(IMediator mediator)
+    public ProductController(IMediator mediator, IEmployeeSalaryCalculator employeeSalaryCalculator)
     {
         _mediator = mediator;
+        _employeeSalaryCalculator = employeeSalaryCalculator;
     }
 
     [HttpGet]
@@ -60,15 +63,30 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(Product product, CancellationToken ct)
+    public async Task<IActionResult> Edit(Product product, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid && product == null)
+        if (!ModelState.IsValid)
         {
-            return View();
+            return View(product);
         }
-        
-        await _mediator.Send(new EditProductCommand(product), ct);
-        
+
+        var existingProduct = await _mediator.Send(new GetProductByIdQuery(product.Id), cancellationToken);
+        if (existingProduct == null)
+        {
+            return NotFound();
+        }
+
+        var salaryCalculator = HttpContext.RequestServices.GetService<IEmployeeSalaryCalculator>();
+        if (salaryCalculator != null && existingProduct.Value.Price != product.Price)
+        {
+            await salaryCalculator.RecalculateSalaryOnProductPriceChange(existingProduct.Value.Id, product.Price, cancellationToken);
+        }
+
+        existingProduct.Value.Name = product.Name;
+        existingProduct.Value.Price = product.Price;
+
+        await _mediator.Send(new EditProductCommand(existingProduct.Value), cancellationToken);
+
         return RedirectToAction(nameof(Index));
     }
 

@@ -24,6 +24,13 @@ public class OrderProductRepository : IOrderProductRepository
         await _db.SaveChangesAsync(ct);
         return orderProduct;
     }
+    public async Task<List<OrderProduct>> GetOrderProductsByProductId(int productId, CancellationToken cancellationToken)
+    {
+        return await _db.OrderProducts
+            .Where(op => op.ProductId == productId)
+            .Include(op => op.Product)
+            .ToListAsync(cancellationToken);
+    }
     
 
     public async Task DeleteOrderProductAsync(OrderProduct orderProduct, CancellationToken ct)

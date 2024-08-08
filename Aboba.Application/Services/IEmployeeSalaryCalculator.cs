@@ -4,5 +4,7 @@ namespace Aboba.Application.Services;
 
 public interface IEmployeeSalaryCalculator
 {
-    public Task CalculateEmployeeSalary()...;
+    Task CalculateEmployeeSalary(List<OrderProduct> orderProducts, CancellationToken cancellationToken);
+    Task RecalculateSalaryOnProductPriceChange(int productId, decimal newPrice, CancellationToken cancellationToken);
+
 }
