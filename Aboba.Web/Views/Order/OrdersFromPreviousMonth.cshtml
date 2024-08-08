@@ -1,5 +1,9 @@
 @model IEnumerable<Order>
 
+@{
+    ViewBag.Title = "Last month orders";
+}
+
 <div class="container p-3">
     <div class="row pt-4">
         <div class="col-6">
@@ -13,7 +17,7 @@
             </form>
         </div>
     </div>
-    <br />
+    <br/>
 
     @if (Model.Any())
     {
