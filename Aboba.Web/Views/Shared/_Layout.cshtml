@@ -1,9 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>@ViewData["Title"] - Aboba.Web</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/Aboba.Web.styles.css" asp-append-version="true"/>
@@ -13,11 +15,15 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Aboba.Web</a>
+            <a style="max-width: 100px; display: flex; align-items: center" class="navbar-brand" asp-area="" asp-controller="Order" asp-action="Index">
+                <img style="max-width: 100%; height: auto;" src="~/img/aboba-logo.png" alt="Aboba"/>
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            @if (User.Identity.IsAuthenticated)
+            {
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
@@ -30,9 +36,10 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Index">Employees</a>
                     </li>
                 </ul>
+                <partial name="_LoginPartial"/>
             </div>
+            }
         </div>
-        <partial name="_LoginPartial" />
     </nav>
 </header>
 <div class="container">

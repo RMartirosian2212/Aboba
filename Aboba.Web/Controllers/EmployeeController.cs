@@ -3,10 +3,12 @@ using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.Employee;
 using Aboba.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aboba.Controllers;
 
+[Authorize]
 public class EmployeeController : Controller
 {
     private readonly IMediator _mediator;

@@ -8,11 +8,13 @@ using Aboba.Application.Services;
 using Aboba.Domain.Entities;
 using Aboba.ViewModels;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Aboba.Controllers;
 
+[Authorize]
 public class OrderController : Controller
 {
     private readonly IOrderRepository _orderRepository;

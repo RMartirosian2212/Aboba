@@ -4,10 +4,12 @@ using Aboba.Application.Queries.GetProducts;
 using Aboba.Application.Services;
 using Aboba.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aboba.Controllers;
 
+[Authorize]
 public class ProductController : Controller
 {
     private readonly IMediator _mediator;
