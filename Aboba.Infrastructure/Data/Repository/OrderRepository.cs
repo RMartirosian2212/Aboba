@@ -33,6 +33,8 @@ public class OrderRepository : IOrderRepository
         return await _db.Orders
             .Include(o => o.OrderProducts)
             .ThenInclude(op => op.Product)
+            .Include(o => o.OrderProducts)
+            .ThenInclude(op => op.Employee)
             .Where(o => o.UploadDate >= startDate && o.UploadDate <= endDate)
             .ToListAsync(ct);
     }
