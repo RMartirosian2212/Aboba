@@ -1,6 +1,7 @@
 ﻿using Aboba.Application.Commands.Employee;
 using Aboba.Application.Interfaces;
 using Aboba.Application.Queries.Employee;
+using Aboba.Application.Queries.GetProducts;
 using Aboba.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -38,8 +39,17 @@ public class EmployeeController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id, CancellationToken cancellationToken)
     {
-        var employee = await _mediator.Send(new GetEmployeeByIdQuery(id), cancellationToken);
-        return View(employee.Value);
+        var employeeResult = await _mediator.Send(new GetEmployeeByIdQuery(id), cancellationToken);
+
+        if (employeeResult.Value == null)
+        {
+            return NotFound();
+        }
+
+        var products = await _mediator.Send(new GetProductsByEmployeeIdQuery(id), cancellationToken);
+        ViewBag.ProductsWithOrders = products;
+
+        return View(employeeResult.Value);
     }
 
     [HttpPost]

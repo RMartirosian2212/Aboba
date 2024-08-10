@@ -1,4 +1,5 @@
-﻿using Aboba.Domain.Entities;
+﻿using Aboba.Application.DTOs;
+using Aboba.Domain.Entities;
 using Aboba.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,22 @@ public class OrderProductRepository : IOrderProductRepository
         return await _db.OrderProducts
             .Where(op => op.ProductId == productId)
             .Include(op => op.Product)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IEnumerable<OrderProductDto>> GetProductsByEmployeeIdAsync(int employeeId, CancellationToken cancellationToken)
+    {
+        return await _db.OrderProducts
+            .Where(op => op.EmployeeId == employeeId)
+            .Select(op => new OrderProductDto
+            {
+                ProductId = op.ProductId,
+                ProductName = op.Product.Name!,
+                OrderId = op.OrderId,
+                OrderTitle = op.Order.Title,
+                Quantity = op.Quantity,
+                Price = op.Product.Price
+            })
             .ToListAsync(cancellationToken);
     }
 
