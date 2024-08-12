@@ -19,10 +19,10 @@ public class EditProductCommandHandler : IRequestHandler<EditProductCommand,Resu
 
         var product = new Domain.Entities.Product()
         {
-            Id = request.product.Id,
-            Name = request.product.Name,
-            Price = request.product.Price,
-            CreatedAt = request.product.CreatedAt,
+            Id = request.Product.Id,
+            Name = request.Product.Name,
+            Price = request.Product.Price,
+            CreatedAt = request.Product.CreatedAt,
             LastChange = localTime
         };
         await _productRepository.UpdateAsync(product, cancellationToken);

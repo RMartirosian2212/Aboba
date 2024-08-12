@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Aboba.Application.Queries.GetProducts;
 
-public record GetProductByIdQuery(int? id) : IRequest<Result<Product>>;
+public record GetProductByIdQuery(int? Id) : IRequest<Result<Product>>;

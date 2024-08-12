@@ -18,8 +18,8 @@ public class AddProductCommandHandler : IRequestHandler<AddProductCommand, Resul
 
         var product = new Domain.Entities.Product()
         {
-            Name = request.product.Name,
-            Price = request.product.Price,
+            Name = request.Product.Name,
+            Price = request.Product.Price,
             CreatedAt = localTime,
             LastChange = localTime
         };
