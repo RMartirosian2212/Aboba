@@ -1,0 +1,15 @@
+﻿@page
+@model RegisterSuccessModel
+@{
+ViewData["Title"] = "Registration Successful";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-success" role="alert">
+    The user has been successfully registered and confirmed.
+</div>
+
+<p>
+    You can now <a href="/Identity/Account/Register">register another user</a> or return to the <a href="/">homepage</a>.
+</p>
