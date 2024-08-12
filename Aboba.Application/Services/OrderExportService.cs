@@ -7,18 +7,18 @@ namespace Aboba.Application.Services
     {
         public async Task<byte[]> ExportOrdersToExcelAsync(DateTime startDate, DateTime endDate, string? fileName, List<Order> orders)
         {
-            // Лицензия на использование EPPlus в некоммерческих целях
+            // License for non-commercial use of EPPlus
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
-            // Словарь для хранения продуктов и их количества
+            // Vocabulary for food storage and quantities
             var productDictionary = new Dictionary<string, (Product product, int quantity, decimal totalPrice)>();
 
-            // Список для хранения информации по сотрудникам
+            // List for storing employee information
             var employeeProductList = new List<(Employee employee, Product product, Order order, decimal price, int quantity, decimal totalProductPrice)>();
 
             decimal overallTotalPrice = 0;
 
-            // Объединение продуктов из заказов и подготовка данных для сотрудников
+            // Combining products from orders and preparing data for employees
             foreach (var order in orders)
             {
                 foreach (var orderProduct in order.OrderProducts)
@@ -41,7 +41,7 @@ namespace Aboba.Application.Services
                         );
                     }
 
-                    // Заполнение данных для второго листа
+                    // Filling in the data for the second sheet
                     if (orderProduct.Employee != null)
                     {
                         employeeProductList.Add((
@@ -58,27 +58,27 @@ namespace Aboba.Application.Services
                 overallTotalPrice += order.TotalPrice;
             }
 
-            // Создание Excel файла
+            // Creating an Excel file
             using (var package = new ExcelPackage())
             {
-                // Первый лист
+                // First sheet
                 string sheetName1 = fileName ?? $"order {startDate:MM/dd/yyyy} - {endDate:MM/dd/yyyy}";
                 var worksheet1 = package.Workbook.Worksheets.Add(sheetName1);
 
-                // Заголовки для первого листа
+                // Headings for the first sheet
                 worksheet1.Cells[1, 1].Value = "Product Id";
                 worksheet1.Cells[1, 2].Value = "Product Name";
                 worksheet1.Cells[1, 3].Value = "Price Per Unit";
                 worksheet1.Cells[1, 4].Value = "Quantity";
                 worksheet1.Cells[1, 5].Value = "Total Price";
 
-                worksheet1.Column(1).Width = 15; // Ширина для Product Id
-                worksheet1.Column(2).Width = 35; // Ширина для Product Name
-                worksheet1.Column(3).Width = 20; // Ширина для Price Per Unit
-                worksheet1.Column(4).Width = 15; // Ширина для Quantity
-                worksheet1.Column(5).Width = 15; // Ширина для Total Price
+                worksheet1.Column(1).Width = 15; // Width for Product Id
+                worksheet1.Column(2).Width = 35; // Width for Product Name
+                worksheet1.Column(3).Width = 20; // Width for Price Per Unit
+                worksheet1.Column(4).Width = 15; // Width for Quantity
+                worksheet1.Column(5).Width = 15; // Width for Total Price
 
-                // Данные для первого листа
+                // Data for the first sheet
                 int row1 = 2;
                 foreach (var kvp in productDictionary)
                 {
@@ -90,14 +90,14 @@ namespace Aboba.Application.Services
                     row1++;
                 }
 
-                // Общая сумма всех заказов
+                // Total sum of all orders
                 worksheet1.Cells[row1, 4].Value = "Overall Total Price:";
                 worksheet1.Cells[row1, 5].Value = overallTotalPrice;
 
-                // Второй лист
+                // Second sheet
                 var worksheet2 = package.Workbook.Worksheets.Add("Employee Product Details");
 
-                // Заголовки для второго листа
+                // Headings for the second sheet
                 worksheet2.Cells[1, 1].Value = "Employee Id";
                 worksheet2.Cells[1, 2].Value = "Employee Name";
                 worksheet2.Cells[1, 3].Value = "Product Id";
@@ -109,23 +109,23 @@ namespace Aboba.Application.Services
                 worksheet2.Cells[1, 9].Value = "Total Product Price";
                 worksheet2.Cells[1, 10].Value = "Employee Salary";
 
-                worksheet2.Column(1).Width = 10; // Ширина для Employee Id
-                worksheet2.Column(2).Width = 20; // Ширина для Employee Name
-                worksheet2.Column(3).Width = 10; // Ширина для Product Id
-                worksheet2.Column(4).Width = 35; // Ширина для Product Name
-                worksheet2.Column(5).Width = 10; // Ширина для Order Id
-                worksheet2.Column(6).Width = 35; // Ширина для Order Title
-                worksheet2.Column(7).Width = 10; // Ширина для Price
-                worksheet2.Column(8).Width = 10; // Ширина для Quantity
-                worksheet2.Column(9).Width = 20; // Ширина для Total Product Price
-                worksheet2.Column(10).Width = 20; // Ширина для Employee Salary
+                worksheet2.Column(1).Width = 10; // Width for Employee Id
+                worksheet2.Column(2).Width = 20; // Width for Employee Name
+                worksheet2.Column(3).Width = 10; // Width for Product Id
+                worksheet2.Column(4).Width = 35; // Width for Product Name
+                worksheet2.Column(5).Width = 10; // Width for Order Id
+                worksheet2.Column(6).Width = 35; // Width for Order Title
+                worksheet2.Column(7).Width = 10; // Width for Price
+                worksheet2.Column(8).Width = 10; // Width for Quantity
+                worksheet2.Column(9).Width = 20; // Width for Total Product Price
+                worksheet2.Column(10).Width = 20; // Width for Employee Salary
 
-                // Данные для второго листа
+                // Data for the second sheet
                 int row2 = 2;
                 foreach (var employeeGroup in employeeProductList.GroupBy(x => x.employee))
                 {
                     var employee = employeeGroup.Key;
-                    // Записываем имя сотрудника один раз
+                    // Record the employee's name once
                     worksheet2.Cells[row2, 1].Value = employee.Id;
                     worksheet2.Cells[row2, 2].Value = employee.Name;
                     worksheet2.Cells[row2, 10].Value = employee.Salary;

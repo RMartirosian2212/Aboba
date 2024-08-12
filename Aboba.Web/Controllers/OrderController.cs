@@ -140,7 +140,7 @@ public class OrderController : Controller
             return NotFound();
         }
 
-        // Пересчитываем общую стоимость заказа
+        // Recalculating the total cost of the order
         decimal totalPrice = await _orderService.CalculateTotalPriceAsync(order.OrderProducts.ToList(), cancellationToken);
         await _mediator.Send(new UpdateOrderPriceCommand(order, totalPrice), cancellationToken);
         

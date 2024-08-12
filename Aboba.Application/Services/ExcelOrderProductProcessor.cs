@@ -48,7 +48,7 @@ public class ExcelOrderProductProcessor : IExcelOrderProductProcessor
                                 product = new Product
                                 {
                                     Name = productName,
-                                    Price = 0 // Цена по умолчанию для новых продуктов, не найденных в базе
+                                    Price = 0 // Default price for new products not found in the database
                                 };
                             }
 
@@ -56,7 +56,7 @@ public class ExcelOrderProductProcessor : IExcelOrderProductProcessor
                             {
                                 Product = product,
                                 Quantity = 1,
-                                IsInDb = product.Id != 0 // Проверка, был ли продукт найден в базе данных
+                                IsInDb = product.Id != 0 // Check if the product has been found in the database
                             });
                         }
                     }
