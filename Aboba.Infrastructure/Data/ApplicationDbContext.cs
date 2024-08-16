@@ -26,20 +26,21 @@ public class ApplicationDbContext : IdentityDbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.Property(e => e.Price).HasColumnType("REAL");
+            entity.Property(e => e.Price).HasColumnType("float");
             entity.HasIndex(e => e.Name).IsUnique();
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity
-                .Property(e => e.TotalPrice).HasColumnType("REAL");
+            entity.Property(e => e.TotalPrice).HasColumnType("float");
+
+            entity.Property(e => e.Title).HasMaxLength(450);
             entity.HasIndex(e => e.Title).IsUnique();
         });
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.Property(e => e.Salary).HasColumnType("REAL");
+            entity.Property(e => e.Salary).HasColumnType("float");
         });
 
         modelBuilder.Entity<OrderProduct>()
@@ -54,16 +55,11 @@ public class ApplicationDbContext : IdentityDbContext
             .HasOne(op => op.Product)
             .WithMany(p => p.OrderProducts)
             .HasForeignKey(op => op.ProductId);
-        
+
         modelBuilder.Entity<OrderProduct>()
             .HasOne(op => op.Employee)
             .WithMany(p => p.OrderProducts)
             .HasForeignKey(op => op.EmployeeId)
             .IsRequired(false);
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite("Data Source=../Aboba.Infrastructure/AbobaDB.db;foreign keys=true;");
     }
 }

@@ -6,13 +6,16 @@ using Aboba.Infrastucture.Data.Repository;
 using Aboba.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddRoles<IdentityRole>()
@@ -31,6 +34,8 @@ services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetProductsQu
 
 
 var app = builder.Build();
+
+MigrateDb(app);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -70,3 +75,13 @@ app.MapControllerRoute(
     pattern: "{controller=Order}/{action=Index}/{id?}");
 
 app.Run();
+
+
+void MigrateDb(IApplicationBuilder app)
+{
+    var scopeFactory = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>();
+
+    using var scope = scopeFactory.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate();
+}
